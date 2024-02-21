@@ -66,4 +66,4 @@ GROUP
    BY   TO_CHAR(SNK.DT_DIAS,'DD'),
         DS_TIPO_REFEICAO
 ORDER
-   BY   DATA_R
+   BY   DATA_R;

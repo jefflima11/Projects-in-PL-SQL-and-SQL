@@ -10,65 +10,88 @@ FILTROS:
 #INTERVALO DE DATAS = MÊS E ANO ATUAL  
 
 ÚLTIMA ATUALIZAÇÃO
-RESPONSÁVEL: 
-CARGO: 
-DATA:
-MOTIVO:
-DESCRIÇÃO: 
+RESPONSÁVEL: JEFFERSON LIMA GONÇALVES
+CARGO: ANALISTA E DESENVOLVEDOR DE SISTEMAS JR
+DATA: 07/02/2024
+MOTIVO: MELHORIA DE DESEMPENHO
+DESCRIÇÃO: TENTATIVA DE MELHORAR O DESEMPENHO DE RETORNO DE INFORMAÇÕES
 */
-
-SELECT  SUM(QT_CARDAPIO)QTD,
-        DS_PRATO,
-        TO_CHAR(SNK.DT_DIAS,'DD') DATA_R
-
-FROM(   SELECT  S.NM_SETOR,
-                MC.CD_MOV_CARDAPIO,
-                TR.DS_TIPO_REFEICAO,
-                TO_DATE(DT_MOV_CARDAPIO) DT_R1,
-                TO_CHAR(DT_MOV_CARDAPIO,'DD/MM/YYYY') DT_R,
-                MC.CD_FUNC CD_FUNCIONARIO,
-                IMC.QT_CARDAPIO,
-                P.DS_PRATO
-        FROM   (SELECT M.CD_SETOR,
-                       M.CD_TIPO_REFEICAO,
-                       M.TP_CARDAPIO,
-                       M.CD_FUNC,
-                       M.DT_MOV_CARDAPIO,
-                       M.CD_MOV_CARDAPIO,
-                       U.CD_USUARIO
-                FROM   DBAMV.MOV_CARDAPIO M,
-                       DBASGU.USUARIOS U
-                WHERE  M.CD_USUARIO_ENTREGA = U.CD_USUARIO(+)) MC,
-                DBAMV.TIPO_REFEICAO TR,
-                DBAMV.SETOR S,
-                DBAMV.ITMOV_CARDAPIO IMC,
-                DBAMV.OPCAO_CARDAPIO OC,
-                DBAMV.PRATO P
-        WHERE   MC.CD_SETOR = S.CD_SETOR
-          AND   MC.CD_TIPO_REFEICAO = TR.CD_TIPO_REFEICAO
-          AND   MC.TP_CARDAPIO = 'P'
-          AND   MC.CD_MOV_CARDAPIO = IMC.CD_MOV_CARDAPIO(+)
-          AND   IMC.CD_OPCAO = OC.CD_OPCAO(+)
-          AND   IMC.CD_PRATO = P.CD_PRATO(+)
-          AND   S.CD_SETOR IN (58)
-          AND   TR.CD_TIPO_REFEICAO = 11
-          --AND   OC.CD_OPCAO IN  ('1')  
-          AND   {Vfull}
-        ORDER
-           BY   CD_MOV_CARDAPIO  
-        )F,
-       (SELECT  TO_DATE(DATA_ATEND) DT_DIAS
-        FROM(SELECT  TO_CHAR(DT_ATENDIMENTO,'DD/MM/YYYY') DATA_ATEND
-             FROM    DBAMV.ATENDIME A)
-        GROUP
-           BY   TO_DATE(DATA_ATEND)) SNK,
-        DBAMV.FUNCIONARIO FUN
-WHERE   F.DT_R1(+) = SNK.DT_DIAS
-  AND   EXTRACT(MONTH FROM SNK.DT_DIAS) = EXTRACT(MONTH FROM SYSDATE)
-  AND   EXTRACT(YEAR FROM SNK.DT_DIAS) = EXTRACT(YEAR FROM SYSDATE)
-  AND   F.CD_FUNCIONARIO = FUN.CD_FUNC(+)    
+ 
+SELECT  S.CD_SETOR,
+        TP_CARDAPIO,
+        SUM(IMC.QT_CARDAPIO)QTD,
+        OC.CD_OPCAO,
+        CASE
+          WHEN  S.CD_SETOR = '345'
+            THEN  'MOTORISTA'
+          WHEN  S.CD_SETOR IS NOT NULL
+            THEN  S.NM_SETOR
+        END  NM_SETOR,
+        TO_CHAR(DT_MOV_CARDAPIO,'DD') DT_MOV,
+        CASE
+          WHEN  P.DS_PRATO = 'ALMOCO' AND OC.CD_OPCAO = 171
+            THEN  'ALMOCO - SOPA'
+          WHEN  P.DS_PRATO = 'JANTAR' AND OC.CD_OPCAO = 171
+            THEN  'JANTAR - SOPA'
+          WHEN  P.DS_PRATO IS NOT NULL 
+            THEN  P.DS_PRATO    
+        END  DS_PRATO,
+        CASE
+          WHEN  P.DS_PRATO = 'DESJEJUM'
+            THEN  '1'
+          WHEN  P.DS_PRATO = 'ALMOCO'
+            THEN  '2'
+          WHEN  P.DS_PRATO = 'ALMOCO' AND OC.CD_OPCAO = 171
+            THEN '3'
+          WHEN  P.DS_PRATO = 'LANCHE'
+            THEN  '4'
+          WHEN  P.DS_PRATO = 'JANTAR' AND OC.CD_OPCAO = 171
+            THEN  '6'              
+          WHEN  P.DS_PRATO = 'JANTAR' 
+            THEN '5'
+          WHEN  P.DS_PRATO = 'CEIA'
+            THEN  '7'            
+        END  ROW_NUM  
+        
+FROM   (SELECT  CD_MOV_CARDAPIO,
+                DT_MOV_CARDAPIO,
+                CD_SETOR,
+                CD_TIPO_REFEICAO,
+                TP_CARDAPIO,
+                CD_FUNC
+        FROM    DBAMV.MOV_CARDAPIO MC
+        WHERE   DT_MOV_CARDAPIO BETWEEN TO_DATE('072023','MMYYYY')
+                                    AND TO_DATE(SYSDATE)
+          AND   TP_CARDAPIO IN ('A','P','S','F')
+          AND   CD_TIPO_REFEICAO = '11'
+          AND   CD_MULTI_EMPRESA = '1'
+       ) MC,
+       (SELECT  CD_PRATO,
+                DS_PRATO
+        FROM    DBAMV.PRATO
+        WHERE   CD_PRATO IN (93,94,95,96,97,98)
+       )P ,
+        DBAMV.TIPO_REFEICAO TR,
+        DBAMV.SETOR S,
+        DBAMV.ITMOV_CARDAPIO IMC,        
+        DBAMV.OPCAO_CARDAPIO OC
+        
+WHERE   MC.CD_SETOR = S.CD_SETOR
+  AND   MC.CD_TIPO_REFEICAO = TR.CD_TIPO_REFEICAO
+  AND   MC.CD_MOV_CARDAPIO = IMC.CD_MOV_CARDAPIO
+  AND   IMC.CD_OPCAO = OC.CD_OPCAO
+  AND   IMC.CD_PRATO = P.CD_PRATO
+  
+  AND   TO_CHAR(MC.DT_MOV_CARDAPIO,'MMYYYY') = '022024'
+  AND   MC.CD_SETOR = 25                     
+  
+         
 GROUP
-   BY   TO_CHAR(SNK.DT_DIAS,'DD'),
-        DS_PRATO
+   BY   S.NM_SETOR,
+        S.CD_SETOR,
+        TO_CHAR(DT_MOV_CARDAPIO,'DD'),
+        P.DS_PRATO,
+        TP_CARDAPIO,
+        IMC.CD_OPCAO
 ORDER
-   BY   DATA_R
+   BY   ROW_NUM;

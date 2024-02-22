@@ -2,7 +2,7 @@
 NAME: JEFFERSON LIMA GONCALVES
 CARGO: ANALISTA E DESENVOLVEDOR DE SISTEMAS JR
 DATA: 01/02/2024
-TITULO: TAXA DE OCUPAÇÃO
+TITULO: TAXA DE OCUPAÇÃO RETROATIVA
 DESCRICAO: 
 FILTROS:
 
@@ -66,3 +66,4 @@ SELECT To_Char(Leitos.Data,'mm/yyyy') MesAno
        ) Pacientes
     ON Leitos.data = Pacientes.data
  GROUP BY To_Char(Leitos.Data,'mm/yyyy'))
+;

@@ -19,8 +19,8 @@ DESCRIÇÃO: TENTATIVA DE MELHORAR O DESEMPENHO DE RETORNO DE INFORMAÇÕES
  
 SELECT  S.CD_SETOR,
         TP_CARDAPIO,
-        SUM(IMC.QT_CARDAPIO)QTD,
         OC.CD_OPCAO,
+        SUM(IMC.QT_CARDAPIO)QTD,
         CASE
           WHEN  S.CD_SETOR = '345'
             THEN  'MOTORISTA'
@@ -29,29 +29,23 @@ SELECT  S.CD_SETOR,
         END  NM_SETOR,
         TO_CHAR(DT_MOV_CARDAPIO,'DD') DT_MOV,
         CASE
-          WHEN  P.DS_PRATO = 'ALMOCO' AND OC.CD_OPCAO = 171
-            THEN  'ALMOCO - SOPA'
-          WHEN  P.DS_PRATO = 'JANTAR' AND OC.CD_OPCAO = 171
-            THEN  'JANTAR - SOPA'
-          WHEN  P.DS_PRATO IS NOT NULL 
-            THEN  P.DS_PRATO    
-        END  DS_PRATO,
-        CASE
-          WHEN  P.DS_PRATO = 'DESJEJUM'
-            THEN  '1'
-          WHEN  P.DS_PRATO = 'ALMOCO'
-            THEN  '2'
-          WHEN  P.DS_PRATO = 'ALMOCO' AND OC.CD_OPCAO = 171
-            THEN '3'
-          WHEN  P.DS_PRATO = 'LANCHE'
-            THEN  '4'
-          WHEN  P.DS_PRATO = 'JANTAR' AND OC.CD_OPCAO = 171
-            THEN  '6'              
-          WHEN  P.DS_PRATO = 'JANTAR' 
-            THEN '5'
-          WHEN  P.DS_PRATO = 'CEIA'
-            THEN  '7'            
-        END  ROW_NUM  
+          WHEN P.DS_PRATO = 'DESJEJUM'
+            THEN '01 - DESJEJUM'
+          WHEN P.DS_PRATO = 'ALMOCO'
+            THEN '02 - ALMOCO'  
+          WHEN P.DS_PRATO = 'ALMOCO' AND OC.CD_OPCAO = 171
+            THEN '03 - ALMOCO SOPA'
+          WHEN P.DS_PRATO = 'LANCHE'
+            THEN '04 - LANCHE'  
+          WHEN P.DS_PRATO = 'JANTAR' 
+            THEN '05 - JANTAR'
+          WHEN P.DS_PRATO = 'JANTAR' AND OC.CD_OPCAO = 171
+            THEN '06 - JANTAR SOPA' 
+          WHEN P.DS_PRATO = 'CEIA' 
+            THEN '07 - CEIA'  
+          WHEN P.DS_PRATO IS NOT NULL 
+            THEN P.DS_PRATO    
+          END DS_PRATO
         
 FROM   (SELECT  CD_MOV_CARDAPIO,
                 DT_MOV_CARDAPIO,
@@ -61,7 +55,7 @@ FROM   (SELECT  CD_MOV_CARDAPIO,
                 CD_FUNC
         FROM    DBAMV.MOV_CARDAPIO MC
         WHERE   DT_MOV_CARDAPIO BETWEEN TO_DATE('072023','MMYYYY')
-                                    AND TO_DATE(SYSDATE)
+                                    AND TO_DATE(SYSDATE+1)
           AND   TP_CARDAPIO IN ('A','P','S','F')
           AND   CD_TIPO_REFEICAO = '11'
           AND   CD_MULTI_EMPRESA = '1'
@@ -82,8 +76,7 @@ WHERE   MC.CD_SETOR = S.CD_SETOR
   AND   IMC.CD_OPCAO = OC.CD_OPCAO
   AND   IMC.CD_PRATO = P.CD_PRATO
   
-  AND   TO_CHAR(MC.DT_MOV_CARDAPIO,'MMYYYY') = '022024'
-  AND   MC.CD_SETOR = 25                     
+  AND   TO_CHAR(MC.DT_MOV_CARDAPIO,'MMYYYY') = '022024'                  
   
          
 GROUP
@@ -92,6 +85,4 @@ GROUP
         TO_CHAR(DT_MOV_CARDAPIO,'DD'),
         P.DS_PRATO,
         TP_CARDAPIO,
-        IMC.CD_OPCAO
-ORDER
-   BY   ROW_NUM;
+        IMC.CD_OPCAO;

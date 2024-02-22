@@ -60,3 +60,4 @@ WHERE
   --Par�metro de pesquisas--
   AND F1.CD_ATENDIMENTO = 1173986
   AND ISV.CD_SINAL_VITAL IN (67,68)
+;

@@ -44,4 +44,5 @@ GROUP
         IRF.VL_UNITARIO
 ORDER
    BY   TP_PROCEDIMENTO,
-        PF.DS_PRO_FAT    
+        PF.DS_PRO_FAT
+;        

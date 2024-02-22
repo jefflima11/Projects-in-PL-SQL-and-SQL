@@ -79,4 +79,4 @@ FROM
     HAVING Count(P.NM_PACIENTE) <> 1
 
     ORDER BY TOTAL DESC
-   )
+   );

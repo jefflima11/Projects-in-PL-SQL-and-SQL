@@ -42,3 +42,4 @@ WHERE
 ORDER BY
   To_Char(DT_MOV_INT,'DD/MM/YYYY'),
   To_Char(HR_MOV_INT,'HH24:MI')
+  ;

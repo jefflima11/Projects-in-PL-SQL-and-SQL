@@ -72,5 +72,5 @@ GROUP
         TD.DS_TIPO_DIETA,
         A.SN_ACOMPANHANTE,
         A.CD_ATENDIMENTO,
-        MC.DS_OBSERVACAO
+        MC.DS_OBSERVACAO;
         

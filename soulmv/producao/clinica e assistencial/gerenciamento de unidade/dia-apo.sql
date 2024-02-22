@@ -138,6 +138,4 @@ WHERE
 
 -- Par�mentro de atendimento 02
 AND F1.CD_ATENDIMENTO = 1174009
-
-
-
+;

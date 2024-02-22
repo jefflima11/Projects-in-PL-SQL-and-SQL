@@ -44,5 +44,5 @@ FROM   (SELECT *
               ) A3 ON A3.CD_ATENDIMENTO = A2.CD_ATENDIMENTO
 
 WHERE  A3.CD_ITPRE_MED IN (SELECT  MC.CD_ITPRE_MED
-                             FROM    DBAMV.MOV_CARDAPIO MC)
+                             FROM    DBAMV.MOV_CARDAPIO MC);
                              

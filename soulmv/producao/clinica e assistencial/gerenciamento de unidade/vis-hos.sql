@@ -40,5 +40,6 @@ GROUP
         NM_PRESTADOR
 ORDER
    BY   DT
+   ;
 
         

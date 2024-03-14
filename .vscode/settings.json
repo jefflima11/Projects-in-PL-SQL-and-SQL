@@ -1,0 +1,21 @@
+{
+    "sqltools.connections": [
+        {
+            "oracleOptions": {
+                "privilege": "Normal",
+                "thickMode": false,
+                "autoCommit": false,
+                "lowerCase": false,
+                "limitPrefetchRows": false
+            },
+            "previewLimit": 50,
+            "server": "192.168.10.236",
+            "port": 1521,
+            "driver": "Oracle",
+            "name": "test",
+            "database": "prd",
+            "username": "dbamv",
+            "password": "suporte@98hui*!"
+        }
+    ]
+}

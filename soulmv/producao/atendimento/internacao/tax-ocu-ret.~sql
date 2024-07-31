@@ -13,7 +13,9 @@ MOTIVO:
 DESCRIÇÃO:
 */
 
-SELECT  ROUND(NVL((SUM(QTD_OCU) / SUM(QTD_DISP)) * 100,0),2) TX_OCU
+SELECT  ROUND(NVL((SUM(QTD_OCU) / SUM(QTD_DISP)) * 100,0),2) TX_OCU,
+        DS_UNID_INT,
+		CD_UNID_INT
 		
 FROM    (
         SELECT  COUNT(*) QTD_DISP, 
@@ -25,8 +27,7 @@ FROM    (
         WHERE   L.CD_UNID_INT = UI.CD_UNID_INT
 		  AND   L.SN_EXTRA = 'N' 
           AND   L.TP_SITUACAO = 'A'
-		  AND   UI.CD_UNID_INT IN (26,11,2)
-          --AND   UI.DS_UNID_INT LIKE ('%%')
+          AND   UI.DS_UNID_INT LIKE ('%%')
           AND   L.DT_DESATIVACAO IS NULL
         GROUP BY  UI.DS_UNID_INT,
                   UI.CD_UNID_INT
@@ -43,9 +44,10 @@ FROM    (
           AND   L.SN_EXTRA = 'N' 
           AND   L.TP_SITUACAO = 'A'
           AND   L.TP_OCUPACAO <> 'V'  
-		  AND   UI.CD_UNID_INT IN (26,11,2)
-          --AND   UI.DS_UNID_INT LIKE ('%%')
+          AND   UI.DS_UNID_INT LIKE ('%%')
           AND   L.DT_DESATIVACAO IS NULL
         GROUP BY  UI.DS_UNID_INT,
                   UI.CD_UNID_INT
-        )A;
+        )A
+GROUP BY  A.DS_UNID_INT,
+          CD_UNID_INT;

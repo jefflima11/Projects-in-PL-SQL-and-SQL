@@ -1,0 +1,5 @@
+/*Contador de horas em dia*/
+
+SELECT TO_CHAR(TO_DATE('01/04/2024', 'DD/MM/YYYY') + (LEVEL - 1)/24, 'DD/MM/YYYY HH24:MI:SS') AS data_hora
+FROM DUAL
+CONNECT BY TO_DATE('01/04/2024', 'DD/MM/YYYY') + (LEVEL - 1)/24 < TO_DATE('30/04/2024', 'DD/MM/YYYY');

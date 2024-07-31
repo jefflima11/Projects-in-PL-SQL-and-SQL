@@ -1,18 +1,3 @@
-/*CREATED BY
-NAME: JEFFERSON LIMA GONCALVES
-CARGO: ANALISTA E DESENVOLVEDOR DE SISTEMAS JR
-DATA: 18/03/2024
-TITULO: CONTAS FECHADAS POR FATURISTAS
-DESCRICAO: Relatório personalizado que me informe os seguintes dados: quanto cada faturista produz em média, e saber quantitativo de contas na produção diária.
-FILTROS:
-
-ÚLTIMA ATUALIZAÇÃO
-RESPÓNSAVEL:
-DATA:
-MOTIVO:
-DESCRIÇÃO:
-*/
-
 SELECT	*
 
 FROM   (SELECT	DISTINCT

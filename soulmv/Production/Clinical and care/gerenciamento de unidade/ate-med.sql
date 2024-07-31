@@ -1,13 +1,3 @@
-/*CREATED BY
-NAME: ?????
-CARGO: ??????
-DATA: ??/??/????
-TITULO: ATENDIMENTOS POR PRESTADORES
-DESCRICAO: 
-FILTROS:
-
-*/
-
 select  TO_DATE(atend.dt_atendimento)DT_ATEND,
         atend.cd_atendimento,
         atend.nm_paciente,

@@ -1,0 +1,22 @@
+-- Created by JEFFERSON LIMA
+
+/*Para o bom funcionamento das funções rodas os scripts na seguinte ordem:
+
+	1. insert-de-paciente-para-pessoa.sql
+			Registra todos os pacientes que se encontram na tabela DBAMV.PACIENTE para a tabela DBAMV.PT_PESSOA.
+
+	2. insert-de-paciente-int-para-mov.sql
+			Registra os paciente que atualmente se encotram internados para a tabela DBAMV.PT_MVTO_PACIENTE.
+	
+	3. create-new-table-log-mov_int.sql
+			Cria tabela de auditoria para tabela MOV_INT.
+
+	4. TRG_PACIENTE_PESSOA_HUMS
+			Sincroniza os registros da DBAMV.PACIENTE com DBAMV.PT_PESSOA.
+
+	5. TRG_MOV_INT_PAC_HUMS.trg
+ 			Sincroniza os registros da DBAMV.MOV_INT para DBAMV.PT_MVTO_PACIENTE.
+
+*** PARA TUDO FUNCIONAR BEM, O SISTEMA SOUL TEM QUE ESTA COM OBRIGATORIEDADE DE CPF ***
+	
+*/

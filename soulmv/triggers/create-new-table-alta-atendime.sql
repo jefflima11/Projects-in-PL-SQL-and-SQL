@@ -1,0 +1,9 @@
+CREATE TABLE ALT_ATENDIME_HUMS (
+	CD_ATENDIMENTO NUMBER PRIMARY KEY,
+	CD_PACIENTE NUMBER NOT NULL,
+	CD_MULTI_EMPRESA NUMBER NOT NULL,
+	DT_ALTA DATE,
+	DT_ALTA_MEDICA DATE
+);
+
+COMMENT ON TABLE ALT_ATENDIME_HUMS IS 'Tabela criada para melhorar o fluxo de triggers na integracao das tabelas do mv portaria com o soulmv';

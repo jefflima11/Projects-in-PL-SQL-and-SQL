@@ -1,0 +1,23 @@
+CREATE OR REPLACE PROCEDURE SP_GERA_REP_OTORRINO_TWO(
+	pCdRepasse IN NUMBER,
+	pCdPrestador IN NUMBER,
+	pVlRepasse IN NUMBER,
+	pCdPrestadorRepasse IN NUMBER
+)
+IS
+BEGIN
+  INSERT INTO DBAMV.REPASSE_PRESTADOR(
+		CD_REPASSE,
+		CD_PRESTADOR,
+		VL_REPASSE,
+		CD_PRESTADOR_REPASSE,
+		CD_SETOR
+	) VALUES (
+		pCdRepasse,
+		pCdPrestador,
+		pVlRepasse,
+		pCdPrestadorRepasse,
+		37
+	)
+END SP_GERA_REP_OTORRINO_TWO;
+/

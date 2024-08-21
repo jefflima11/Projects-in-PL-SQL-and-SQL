@@ -1,0 +1,17 @@
+-- Created by JEFFERSON LIMA
+
+/*Para o bom funcionamento das funções rodas os scripts na seguinte ordem:
+
+		1. create-table-log-repasse.sql
+				Cria tabela de log do repasses com particularidades.
+
+		2. TR_REPASSE_AUTOMATICO_HUMS.trg
+				Registra os dados recebidos na tabela REPASSE para a tabela LOG_REPASSE_HUMS.
+	
+		3. TRG_UPDATE_PRE_REP_LOG_HUMS.trg
+				Atualiza o prestador da tabela de logs do repasse.
+
+		4. TRG_REG_REPASSE.trg
+				Verifica o tipo de particularidade nas regras de repasse para resgatar os dados do cursor e criar registros na tabela REPASSE e REPASSE_PRESTADOR mediante produzido na competência desejada.
+	
+*/

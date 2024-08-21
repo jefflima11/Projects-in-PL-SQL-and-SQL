@@ -1,7 +1,3 @@
-/*
-Created by Jefferson Lima
-Insere o repasse registrado para a tabela de LOG_REPASSE_HUMS
-*/
 CREATE OR REPLACE TRIGGER TRG_REPASSE_AUTOMATICO_HUMS
   AFTER INSERT ON DBAMV.REPASSE
   FOR EACH ROW

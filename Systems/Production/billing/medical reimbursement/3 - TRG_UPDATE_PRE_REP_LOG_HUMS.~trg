@@ -2,6 +2,8 @@
 Created by Jefferson Lima
 Atualiza coluna de prestadore da tabela LOG_REPASSE_HUMS	
 */
+
+
 CREATE OR REPLACE TRIGGER TRG_UPDATE_PRE_REP_LOG_HUMS
   AFTER INSERT
   ON DBAMV.REPASSE_PRESTADOR 

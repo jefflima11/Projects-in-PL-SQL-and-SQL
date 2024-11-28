@@ -34,9 +34,9 @@ SELECT  MES_ANO,
 																																		   DBAMV.UNID_INT,
 																																		   DBAMV.SETOR,
 																																		   DBAMV.TIP_ACOM,
-																																		   (SELECT ((@p_datai) - 1) + ROWNUM DATA
+																																		   (SELECT (TO_DATE('01/01/2024', 'dd/mm/yyyy') - 1) + ROWNUM DATA
 																																			  FROM DBAMV.CID
-																																			 WHERE ((@p_datai) - 1) + ROWNUM <=                                               (@p_dataf)) CONTADOR
+																																			 WHERE (TO_DATE('01/01/2024', 'dd/mm/yyyy') - 1) + ROWNUM <=                                               TO_DATE('30/04/2024', 'dd/mm/yyyy')) CONTADOR
 																																	 WHERE CONTADOR.DATA >= LEITO.DT_ATIVACAO
 																																	   AND CONTADOR.DATA <= NVL (LEITO.DT_DESATIVACAO, SYSDATE)
 																																	   AND LEITO.SN_EXTRA = 'N'
@@ -68,9 +68,9 @@ FROM    DBAMV.MOV_INT,
         DBAMV.UNID_INT,
         DBAMV.LEITO,
         DBAMV.ATENDIME,
-        ( SELECT( (@p_datai) - 1  + ROWNUM )DATA
+        ( SELECT( TO_DATE('01/01/2024', 'dd/mm/yyyy') - 1  + ROWNUM )DATA
           FROM DBAMV.CID
-          WHERE (@p_datai) - 1  + ROWNUM <= (@p_dataf)
+          WHERE TO_DATE('01/01/2024', 'dd/mm/yyyy') - 1  + ROWNUM <= TO_DATE('30/04/2024', 'dd/mm/yyyy')
 		) CONTADOR
 
 WHERE   TRUNC(DT_MOV_INT) <= CONTADOR.DATA - 1
@@ -103,9 +103,9 @@ FROM    DBAMV.ATENDIME,
         DBAMV.LEITO,
         DBAMV.MOV_INT,
         DBAMV.CONVENIO,
-        ( SELECT ( (@p_datai) - 1 ) + ROWNUM DATA
+        ( SELECT ( TO_DATE('01/01/2024', 'dd/mm/yyyy') - 1 ) + ROWNUM DATA
           FROM DBAMV.CID
-          WHERE ( (@p_datai) - 1 ) + ROWNUM <= (@p_dataf)) CONTADOR
+          WHERE ( TO_DATE('01/01/2024', 'dd/mm/yyyy') - 1 ) + ROWNUM <= TO_DATE('30/04/2024', 'dd/mm/yyyy')) CONTADOR
           
 WHERE LEITO.CD_UNID_INT = UNID_INT.CD_UNID_INT
   AND LEITO.CD_LEITO = MOV_INT.CD_LEITO
@@ -139,9 +139,9 @@ FROM    DBAMV.MOV_INT,
         DBAMV.LEITO LEITO1,
         DBAMV.ATENDIME,
         DBAMV.CONVENIO,
-        ( SELECT ( (@p_datai) - 1 ) + ROWNUM DATA
+        ( SELECT ( TO_DATE('01/01/2024', 'dd/mm/yyyy') - 1 ) + ROWNUM DATA
             FROM DBAMV.CID
-           WHERE ( (@p_datai) - 1 ) + ROWNUM <= (@p_dataf) ) CONTADOR
+           WHERE ( TO_DATE('01/01/2024', 'dd/mm/yyyy') - 1 ) + ROWNUM <= TO_DATE('30/04/2024', 'dd/mm/yyyy') ) CONTADOR
 WHERE   MOV_INT.TP_MOV = 'O'
   AND   TRUNC( MOV_INT.DT_MOV_INT ) = TRUNC(CONTADOR.DATA)
   AND   MOV_INT.CD_LEITO = LEITO.CD_LEITO
@@ -175,9 +175,9 @@ FROM    DBAMV.ATENDIME,
         DBAMV.LEITO,
         DBAMV.MOT_ALT,
         DBAMV.CONVENIO,
-        ( SELECT ( (@p_datai) - 1 ) + ROWNUM DATA
+        ( SELECT ( TO_DATE('01/01/2024', 'dd/mm/yyyy') - 1 ) + ROWNUM DATA
             FROM DBAMV.CID
-           WHERE ( (@p_datai) - 1 ) + ROWNUM <= (@p_dataf) ) CONTADOR
+           WHERE ( TO_DATE('01/01/2024', 'dd/mm/yyyy') - 1 ) + ROWNUM <= TO_DATE('30/04/2024', 'dd/mm/yyyy') ) CONTADOR
            
 WHERE  LEITO.CD_LEITO = ATENDIME.CD_LEITO
   AND  MOT_ALT.CD_MOT_ALT = ATENDIME.CD_MOT_ALT
@@ -211,9 +211,9 @@ FROM   DBAMV.MOV_INT,
        DBAMV.LEITO LEITO1,
        DBAMV.ATENDIME,
        DBAMV.CONVENIO,
-       ( SELECT ( (@p_datai) - 1 ) + ROWNUM DATA
+       ( SELECT ( TO_DATE('01/01/2024', 'dd/mm/yyyy') - 1 ) + ROWNUM DATA
             FROM DBAMV.CID
-           WHERE ( (@p_datai) - 1 ) + ROWNUM <= (@p_dataf) ) CONTADOR
+           WHERE ( TO_DATE('01/01/2024', 'dd/mm/yyyy') - 1 ) + ROWNUM <= TO_DATE('30/04/2024', 'dd/mm/yyyy') ) CONTADOR
            
 WHERE  TRUNC( MOV_INT.DT_MOV_INT ) = TRUNC(CONTADOR.DATA)
   AND  MOV_INT.TP_MOV = 'O'
@@ -248,9 +248,9 @@ FROM    DBAMV.ATENDIME,
         DBAMV.LEITO,
         DBAMV.MOT_ALT,
         DBAMV.CONVENIO,
-        ( SELECT ( (@p_datai) - 1 ) + ROWNUM DATA
+        ( SELECT ( TO_DATE('01/01/2024', 'dd/mm/yyyy') - 1 ) + ROWNUM DATA
             FROM DBAMV.CID
-           WHERE ( (@p_datai) - 1 ) + ROWNUM <= (@p_dataf) ) CONTADOR
+           WHERE ( TO_DATE('01/01/2024', 'dd/mm/yyyy') - 1 ) + ROWNUM <= TO_DATE('30/04/2024', 'dd/mm/yyyy') ) CONTADOR
 WHERE   LEITO.CD_LEITO = ATENDIME.CD_LEITO
   AND   MOT_ALT.CD_MOT_ALT = ATENDIME.CD_MOT_ALT
   AND   LEITO.CD_UNID_INT = UNID_INT.CD_UNID_INT

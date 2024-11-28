@@ -1,0 +1,304 @@
+SELECT	DT,
+				PAC_INT_00H,
+				ENT_INTERNADOS,
+				ENT_TRANSF,
+				SAI_ALTAS,
+				SAI_TRANSFPARA,
+				SAI_OBITOS,
+				TOTALLEITO,
+				PAC_DIA,
+				ROUND(((PAC_DIA * 100) / TOTALLEITO),2)	TX_OCU,
+				ROUND((PAC_DIA) / (SAI_ALTAS + SAI_OBITOS + SAI_TRANSFPARA),2) MED_PERM
+FROM	(
+      SELECT 	DT,
+              SUM(PAC_INT_00H) PAC_INT_00H,
+              SUM(ENT_INTERNADOS) ENT_INTERNADOS,
+              SUM(ENT_TRANSF) ENT_TRANSF,
+              SUM(SAI_ALTAS) SAI_ALTAS,
+              SUM(SAI_TRANSFPARA) SAI_TRANSFPARA,
+              SUM(SAI_OBITOS) SAI_OBITOS,
+              SUM(TOTALLEITO) TOTALLEITO,
+              SUM(PAC_INT_00H + ENT_INTERNADOS + ENT_TRANSF) - SUM(SAI_ALTAS + SAI_TRANSFPARA + SAI_OBITOS) PAC_DIA
+      				
+      FROM (
+            /*NOVO TODOS*/
+            SELECT 	TO_CHAR(F.DT,'MM/YYYY') DT,
+                    0 PAC_INT_00H,
+                    SUM(F.ENT_INTERNADOS) ENT_INTERNADOS,
+                    SUM(F.ENT_TRANSF) ENT_TRANSF,
+                    SUM(F.SAI_ALTAS) SAI_ALTAS,
+                    SUM(F.SAI_TRANSFPARA) SAI_TRANSFPARA,
+                    SUM(F.SAI_OBITOS) SAI_OBITOS,
+                    SUM(F.TOTALLEITO) TOTALLEITO
+            fROM (
+									/*Internados no periodo*/
+                  SELECT  TO_DATE(MI.DT_MOV_INT) DT,
+                          0 PAC_INT_00H,
+                          COUNT(*) ENT_INTERNADOS,
+                          0 ENT_TRANSF,
+                          0 SAI_ALTAS,
+                          0 SAI_TRANSFPARA,
+                          0 SAI_OBITOS,
+                          0 TOTALLEITO,
+                          UI.CD_UNID_INT,
+                          L.CD_TIP_ACOM
+                          
+                  FROM    DBAMV.ATENDIME A,
+                          DBAMV.UNID_INT UI,
+                          DBAMV.LEITO L,
+                          DBAMV.MOV_INT MI,
+                          DBAMV.CONVENIO C
+                            
+                  WHERE L.CD_UNID_INT = UI.CD_UNID_INT
+                    AND L.CD_LEITO = MI.CD_LEITO
+                    AND MI.TP_MOV = 'I'
+                    AND A.CD_ATENDIMENTO = MI.CD_ATENDIMENTO
+                    AND ( A.TP_ATENDIMENTO IN ('I', 'H') )
+                    AND A.CD_CONVENIO = C.CD_CONVENIO
+                    AND (A.CD_MULTI_EMPRESA = 1)
+                      
+                  GROUP BY TO_DATE(MI.DT_MOV_INT),
+                          UI.CD_UNID_INT,
+                          L.CD_TIP_ACOM
+
+                  UNION
+
+                  /*Pacientes transferidos "de" no periodo*/
+                  SELECT  TO_DATE(MI.DT_MOV_INT) DT,
+                          0 PAC_INT_00H,
+                          0 ENT_INTERNADOS,
+                          COUNT(*) ENT_TRANSF,
+                          0 SAI_ALTAS,
+                          0 SAI_TRANSFPARA,
+                          0 SAI_OBITOS,
+                          0 TOTALLEITO,
+                          UI.CD_UNID_INT,
+                          L.CD_TIP_ACOM
+                          
+                  FROM    DBAMV.MOV_INT MI,
+                          DBAMV.UNID_INT UI,
+                          DBAMV.UNID_INT UI1,
+                          DBAMV.LEITO L,
+                          DBAMV.LEITO L1,
+                          DBAMV.ATENDIME A,
+                          DBAMV.CONVENIO C
+
+                  WHERE   MI.TP_MOV = 'O'
+                    AND   MI.CD_LEITO = L.CD_LEITO
+                    AND   MI.CD_LEITO_ANTERIOR = L1.CD_LEITO
+                    AND   L1.CD_UNID_INT = UI1.CD_UNID_INT
+                    AND   UI.CD_UNID_INT <> UI1.CD_UNID_INT
+                    AND   L.CD_UNID_INT = UI.CD_UNID_INT
+                    AND   A.CD_ATENDIMENTO = MI.CD_ATENDIMENTO
+                    AND   A.TP_ATENDIMENTO IN ('I', 'H')
+                    AND   A.CD_CONVENIO = C.CD_CONVENIO
+                    AND   A.CD_MULTI_EMPRESA = 1
+
+                      
+                  GROUP BY TO_DATE(MI.DT_MOV_INT),
+                          UI.CD_UNID_INT,
+                          L.CD_TIP_ACOM
+
+                  UNION
+            			
+                  /*PACIENTES DE ALTA NO PERIODO*/
+                  SELECT  TO_DATE(A.DT_ALTA) DT,
+                          0 PAC_INT_00H,
+                          0 ENT_INTERNADOS,
+                          0 ENT_TRANSF,
+                          COUNT(*) SAI_ALTAS,
+                          0 SAI_TRANSFPARA,
+                          0 SAI_OBITOS,
+                          0 TOTALLEITO,
+                          UI.CD_UNID_INT,
+                          L.CD_TIP_ACOM 
+                  	
+                  FROM    DBAMV.ATENDIME A,
+                          DBAMV.UNID_INT UI,	
+                          DBAMV.LEITO L,
+                          DBAMV.MOT_ALT MA,
+                          DBAMV.CONVENIO C
+                             
+                  WHERE  L.CD_LEITO = A.CD_LEITO
+                    AND  MA.CD_MOT_ALT = A.CD_MOT_ALT
+                    AND  UI.CD_UNID_INT = L.CD_UNID_INT
+                    AND  MA.TP_MOT_ALTA <> 'O'
+                    AND  A.TP_ATENDIMENTO = 'I'
+                    AND  A.CD_CONVENIO = C.CD_CONVENIO
+                    AND  A.CD_MULTI_EMPRESA = 1
+                      
+                  GROUP BY TO_DATE(A.DT_ALTA),
+                          UI.CD_UNID_INT,
+                          L.CD_TIP_ACOM
+            	
+                  UNION
+            			
+                  /*Paciente com saida por obito no periodo*/
+                  SELECT  TO_DATE(A.DT_ALTA)DT,
+                          0 PAC_INT_00H,
+                          0 ENT_INTERNADOS,
+                          0 ENT_TRANSF,
+                          0 SAI_ALTAS,
+                          0 SAI_TRANSFPARA,
+                          COUNT(*) SAI_OBITOS,
+                          0 TOTALLEITO,
+                          UI.CD_UNID_INT,
+                          L.CD_TIP_ACOM
+
+                  FROM    DBAMV.ATENDIME A,
+                          DBAMV.UNID_INT UI,
+                          DBAMV.LEITO L,
+                          DBAMV.MOT_ALT MA,
+                          DBAMV.CONVENIO C
+
+                  WHERE   L.CD_LEITO = A.CD_LEITO
+                    AND   MA.CD_MOT_ALT = A.CD_MOT_ALT
+                    AND   L.CD_UNID_INT = UI.CD_UNID_INT
+                    AND   MA.TP_MOT_ALTA = 'O'
+                    AND   A.TP_ATENDIMENTO = 'I'
+                    AND   A.CD_CONVENIO = C.CD_CONVENIO
+                    AND   A.CD_MULTI_EMPRESA = 1
+                    
+                  GROUP BY TO_DATE(A.DT_ALTA),
+                          UI.CD_UNID_INT,
+                          L.CD_TIP_ACOM
+
+                  UNION
+
+                  /*Pacientes transferidos para outras unidades no periodo*/
+                  SELECT  TO_DATE(MI.DT_MOV_INT)DT,
+                          0 PAC_INT_00H,
+                          0 ENT_INTERNADOS,
+                          0 ENT_TRANSF,
+                          0 SAI_ALTAS,
+                          COUNT(*) SAI_TRANSFPARA,
+                          0 SAI_OBITOS,
+                          0 TOTALLEITO,
+                          UI.CD_UNID_INT,
+                          L.CD_TIP_ACOM
+                         
+                  FROM   DBAMV.MOV_INT MI,
+                         DBAMV.UNID_INT UI,
+                         DBAMV.UNID_INT UI1,
+                         DBAMV.LEITO L,
+                         DBAMV.LEITO L1,
+                         DBAMV.ATENDIME A ,
+                         DBAMV.CONVENIO C 
+                  WHERE  MI.TP_MOV = 'O'
+                    AND  MI.CD_LEITO_ANTERIOR = L.CD_LEITO
+                    AND  MI.CD_LEITO = L1.CD_LEITO
+                    AND  L1.CD_UNID_INT = UI1.CD_UNID_INT
+                    AND  UI.CD_UNID_INT <> UI1.CD_UNID_INT
+                    AND  L.CD_UNID_INT = UI.CD_UNID_INT
+                    AND  A.CD_ATENDIMENTO = MI.CD_ATENDIMENTO
+                    AND  A.TP_ATENDIMENTO IN ('I', 'H')
+                    AND  A.CD_CONVENIO = C.CD_CONVENIO
+                    AND  A.CD_MULTI_EMPRESA = 1
+                      
+                  GROUP BY TO_DATE(MI.DT_MOV_INT),
+                          UI.CD_UNID_INT,
+                          L.CD_TIP_ACOM
+                  ) F,
+                  ( SELECT (To_date('01/08/2024','dd/mm/yyyy') - 1 ) + ROWNUM DT
+                              FROM DBAMV.CID
+                             WHERE ( To_date('01/08/2024','dd/mm/yyyy') - 1 ) + ROWNUM <= (To_date('31/08/2024','dd/mm/yyyy') ) 
+                  )CONTADOR
+            WHERE	TRUNC(F.DT) = TRUNC(CONTADOR.DT)
+            AND		F.CD_UNID_INT IN (2,11,26)
+            AND  F.CD_TIP_ACOM IN (1,2,8)
+
+
+            GROUP BY TO_CHAR(F.DT,'MM/YYYY')	
+
+            UNION
+
+            SELECT 	TO_CHAR(DT,'MM/YYYY') DT,
+                    SUM(PAC_INT_00H) PAC_INT_00H,
+                    0 ENT_INTERNADOS,
+                    0 ENT_TRANSF,
+                    0 SAI_ALTAS,
+                    0 SAI_TRANSFPARA,
+                    0 SAI_OBITOS,
+                    0 TOTALLEITO
+
+            FROM		(
+                    /*Pacientes internados até 0:00h*/
+                    SELECT  TO_DATE(CONTADOR.DT) DT,
+                            COUNT(*) PAC_INT_00H,
+                            0 ENT_INTERNADOS,
+                            0 ENT_TRANSF,
+                            0 SAI_ALTAS,
+                            0 SAI_TRANSFPARA,
+                            0 SAI_OBITOS,
+                            0 TOTALLEITO,
+                            UI.CD_UNID_INT,
+                            L.CD_TIP_ACOM
+                    		
+                    FROM    DBAMV.MOV_INT MI,
+                            DBAMV.UNID_INT UI,
+                            DBAMV.LEITO L,
+                            DBAMV.ATENDIME A,
+                            ( SELECT (To_date('01/08/2024','dd/mm/yyyy') - 1 ) + ROWNUM DT
+                                      FROM DBAMV.CID
+                                     WHERE ( To_date('01/08/2024','dd/mm/yyyy') - 1 ) + ROWNUM <= (To_date('31/08/2024','dd/mm/yyyy') ) 
+                            )CONTADOR
+
+                    WHERE   TRUNC(DT_MOV_INT) <= CONTADOR.DT - 1  AND   TRUNC(NVL(DT_LIB_MOV, SYSDATE) ) > CONTADOR.DT - 1
+                      AND   TP_MOV IN('O', 'I')
+                      AND   L.CD_UNID_INT = UI.CD_UNID_INT
+                      AND   MI.CD_ATENDIMENTO = A.CD_ATENDIMENTO
+                      AND   MI.CD_LEITO = L.CD_LEITO
+                      AND   NVL(DBAMV.F_VALIDA_DATA_HOSPITAL_DIA('N',A.DT_ALTA),'N') = 'S'
+                      AND   A.TP_ATENDIMENTO  = 'I'
+                      AND   A.CD_ATENDIMENTO_PAI IS NULL
+                      AND		L.CD_UNID_INT IN (2,11,26)
+                      AND  L.CD_TIP_ACOM IN (1,2,8)
+
+                    GROUP BY  TO_DATE(CONTADOR.DT),
+                            UI.CD_UNID_INT,
+                            L.CD_TIP_ACOM
+                    )
+						
+									GROUP BY TO_CHAR(DT,'MM/YYYY')
+
+						UNION
+
+						/*Leitos por dia no periodo*/
+            SELECT 	TO_CHAR(DT,'MM/YYYY') DT,
+										0 PAC_INT_00H,
+                    0 ENT_INTERNADOS,
+                    0 ENT_TRANSF,
+                    0 SAI_ALTAS,
+                    0 SAI_TRANSFPARA,
+                    0 SAI_OBITOS,
+                    COUNT(*) TOTALLEITO
+
+              FROM DBAMV.LEITO L,
+                   DBAMV.UNID_INT UI,
+                   DBAMV.SETOR S,
+                   DBAMV.TIP_ACOM TA,
+                   (SELECT (To_date('01/08/2024', 'dd/mm/yyyy') - 1) + ROWNUM DT
+                      FROM DBAMV.CID
+                     WHERE (To_date('01/08/2024', 'dd/mm/yyyy') - 1) + ROWNUM <=
+                           (To_date('31/08/2024', 'dd/mm/yyyy'))) CONTADOR
+             WHERE CONTADOR.DT >= L.DT_ATIVACAO
+               AND CONTADOR.DT <= NVL(L.DT_DESATIVACAO, SYSDATE)
+               AND L.SN_EXTRA = 'N'
+               AND L.CD_UNID_INT = UI.CD_UNID_INT
+               AND UI.CD_SETOR = S.CD_SETOR
+               AND S.CD_MULTI_EMPRESA = 1
+               AND TA.CD_TIP_ACOM = L.CD_TIP_ACOM
+               AND TA.TP_ACOMODACAO <> 'B'
+               AND UI.SN_HOSPITAL_DIA = 'N'
+               AND L.SN_EXTRA = 'N'
+               AND UI.TP_UNID_INT = 'I'
+               AND NVL(UI.SN_HOSPITAL_DIA, 'N') = 'N'
+               AND		L.CD_UNID_INT IN (2,11,26)
+               AND  L.CD_TIP_ACOM IN (1,2,8)
+
+            GROUP BY 	TO_CHAR(DT,'MM/YYYY')
+             
+      )
+
+      GROUP BY DT
+)F

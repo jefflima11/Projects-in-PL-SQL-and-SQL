@@ -21,19 +21,19 @@ BEGIN
       doc_ident_id,
       nr_documento,
       telefone,
+      nm_social,
       sn_utiliza_nome_social,
-      sn_visitante_restrito,
-			cd_paciente
+      sn_visitante_restrito
   	)
   	values (
       seq_pt_pessoa.nextval, 
       upper(:new.nm_paciente),
       upper(1),
       upper(numeroCpf),
-      upper(:new.nr_celular),
+      upper(:new.nr_celular), 
+      upper(:new.nm_social_paciente || :new.cd_paciente),
       upper(:new.sn_utiliza_nome_social),
-      upper('N'),
-			upper(:new.cd_paciente)
+      upper('N')
   	);
 
 	elsif updating then
@@ -43,7 +43,7 @@ BEGIN
 			nm_nome = :new.nm_paciente,
 			nr_documento = numeroCpf
 		where
-			cd_paciente = :new.cd_paciente;
+			cd_paciente = to_char(:new.cd_paciente);
 
 	else
 		 dbamv.sp_snake_trash_hums('TRIGGER_ERROR', SYSDATE, 'Erro inesperado no trigger');

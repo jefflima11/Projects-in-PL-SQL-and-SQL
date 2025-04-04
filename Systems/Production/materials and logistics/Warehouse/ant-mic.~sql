@@ -2,7 +2,6 @@ SELECT
     ds_produto,
     ds_unidade,
     ROUND(SUM(qt_consumo)) AS qt_consumo,
-    cd_atendimento,
     ROUND(SUM(qt_presc)) AS qt_presc,
     ROUND((SUM(qt_consumo) * 100) / NULLIF(SUM(qt_presc), 0)) AS qt_total
 FROM (
@@ -150,5 +149,5 @@ FROM (
       AND cd_estoque IN (3)
     GROUP BY cd_atendimento, p.cd_produto, p.ds_produto
 ) f
-GROUP BY ds_produto, ds_unidade, cd_produto, cd_atendimento
+GROUP BY ds_produto, ds_unidade, cd_produto
 HAVING SUM(qt_consumo) > 0;
